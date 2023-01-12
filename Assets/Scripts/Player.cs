@@ -30,27 +30,17 @@ public class Player : MonoBehaviour
         myBody.freezeRotation = true;
         
     }
- 
-    public void TakeDmg(int dmg)
-    {
-        hp = hp - dmg; 
-    }
 
-    void Heal(int health)
-    {
-        hp = hp + health;
-    }
+    void HealthUpdate(int dmg) {
+        hp = hp - dmg;
 
-    void HealthCheck()
-    {
-        if (hp <= 0)
-        {
+        if (hp <= 0) {
             Destroy(gameObject);
-            
-            
         }
-    }
 
+        PlayerHealth.instance.TakeHealth(dmg);
+    }
+    
     void Movement()
     {
         movementX = Input.GetAxisRaw("Horizontal");
@@ -87,15 +77,20 @@ public class Player : MonoBehaviour
             anim.SetBool("walking_up", false);
             anim.SetBool("walking_down", false);
         }
+
     }
 
     private void OnCollisionEnter2D(Collision2D collision)
     {
         if(collision.gameObject.TryGetComponent<CoyoteProjectile>(out CoyoteProjectile projectile))
         {
-            TakeDmg(projectile.dmg);
-            HealthCheck();
-            PlayerHealth.instance.TakeHealth(projectile.dmg);
+          
+           HealthUpdate(projectile.dmg);
+        }
+        
+        if(collision.gameObject.TryGetComponent<Enemy_Cactus>(out Enemy_Cactus enemy)) {
+           HealthUpdate(enemy.dmg);
+
         }
     }
 }
